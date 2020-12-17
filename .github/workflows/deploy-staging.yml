@@ -1,0 +1,121 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches:
+      - 'staging'
+
+jobs:
+  build-packages:
+    name: Build package
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Install package
+      run: npm ci
+      
+    # Staging
+    - name: Build staging package
+      run: npm run build
+      env:
+        REACT_APP_GOOGLE_CLOUD_RUN_HOST: https://europe-west2-staging-tusestimaciones.cloudfunctions.net/
+        REACT_APP_GOOGLE_MAPS_KEY: "${{ secrets.GOOGLE_MAPS_KEY }}"
+
+    - name: Prepare staging package
+      run: cp firebase.json build/
+
+    - name: Upload staging package
+      uses: actions/upload-artifact@v2
+      with:
+        name: staging-package
+        path: build
+
+    # Production
+    - name: Build production package
+      run: npm run build
+      env:
+        REACT_APP_GOOGLE_CLOUD_RUN_HOST: https://europe-west2-tusestimaciones.cloudfunctions.net/
+        REACT_APP_GOOGLE_MAPS_KEY: "${{ secrets.GOOGLE_MAPS_KEY }}"
+
+    - name: Prepare production package
+      run: cp firebase.json build/
+
+    - name: Upload production package
+      uses: actions/upload-artifact@v2
+      with:
+        name: production-package
+        path: build
+
+  deploy-staging:
+    name: Deploy to staging
+    needs: build-packages
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging-tusestimaciones.web.app/
+
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v2
+      with:
+        name: staging-package
+
+    - name: Deploy to staging
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ secrets.GITHUB_TOKEN }}"
+        firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+        projectId: staging-tusestimaciones
+        channelId: live
+        
+  deploy-production:
+    name: Deploy to production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://tusestimaciones.web.app/
+  
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v2
+      with:
+        name: production-package
+
+    - name: Deploy to production
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: "${{ secrets.GITHUB_TOKEN }}"
+        firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+        projectId: tusestimaciones
+        channelId: live
+
+    - uses: actions/checkout@v2
+
+    - name: Merge staging branch
+      uses: devmasx/merge-branch@v1.3.1
+      with:
+        type: now
+        from_branch: staging
+        target_branch: main
+        github_token: ${{ github.token }}

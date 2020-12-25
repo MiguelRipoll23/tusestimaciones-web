@@ -51,7 +51,7 @@ const EstimationsStopView = (props) => {
         const estimationsList = data[1];
 
         // Check if response is empty
-        if (estimationsList === 0) {
+        if (estimationsList.length === 0) {
           throw new Error('Empty response.');
         }
 

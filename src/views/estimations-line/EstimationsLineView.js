@@ -73,6 +73,11 @@ const EstimationsLineView = (props) => {
         const estimationsList = data[0];
         const stopsList = data[1];
 
+        // Check if response is empty
+        if (estimationsList.length === 0) {
+          throw new Error('Empty response.');
+        }
+
         setLoading(false);
         setEstimations(estimationsList);
         setStops(stopsList)

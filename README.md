@@ -4,4 +4,4 @@ Una aplicación web para consultar las estimaciones y rutas de las líneas del t
 
 El front-end se ha hecho con `React` y el back-end con `Express` usando `Node`.
 
-[![Preview](http://img.youtube.com/vi/No6yDkFSTeY/0.jpg)](http://www.youtube.com/watch?v=No6yDkFSTeY)
+[![Preview](http://img.youtube.com/vi/Q-c2dXA_kec/0.jpg)](https://youtu.be/Q-c2dXA_kec)

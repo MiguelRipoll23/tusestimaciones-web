@@ -117,5 +117,5 @@ jobs:
       with:
         type: now
         from_branch: staging
-        target_branch: main
+        target_branch: production
         github_token: ${{ github.token }}

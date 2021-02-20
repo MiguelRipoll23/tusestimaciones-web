@@ -28,8 +28,8 @@ const StopStyled = styled.li`
   &:before {
     content: '';
     position: absolute;
-    left: -22.8px;
-    border-left: 3px solid ${props => props.color};
+    left: -23.8px;
+    border-left: 2px solid ${props => props.color};
     width: 1px;
     height: 100%;
   }
@@ -37,23 +37,23 @@ const StopStyled = styled.li`
   &:after {
     content: '';
     position: absolute;
-    left: -31px;
+    left: -32px;
     top: 0px;
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 3px solid ${props => props.color};
+    border: 2px solid ${props => props.color};
     background: ${props => (props.active ? props.color : '#fff')};
   }
 
   @media (prefers-color-scheme: dark) {
     &:before {
-      border-left: 3px solid #fff;
+      border-left: 2px solid #fff;
     }
 
     &:after {
       background: ${props => (props.active ? '#fff' : '#000')};
-      border: 3px solid #fff;
+      border: 2px solid #fff;
     }
   }
 

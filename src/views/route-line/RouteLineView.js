@@ -38,7 +38,7 @@ const StopStyled = styled.li`
     content: '';
     position: absolute;
     left: -32px;
-    top: 0px;
+    top: 1px;
     width: 14px;
     height: 14px;
     border-radius: 50%;

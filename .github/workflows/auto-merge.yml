@@ -1,7 +1,9 @@
 name: Auto merge
 
 on:
-  pull_request: development 
+  pull_request:
+    branches:
+      - development
 
 jobs:
   auto-merge:
